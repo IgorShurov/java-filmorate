@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -33,7 +34,7 @@ public class FilmController {
 
     public static void validateFilm(Film film) {
         try {
-            if (film.getName() == null || film.getName().trim().isEmpty())
+            if (StringUtils.isBlank(film.getName()))
                 throw new ValidationException("Название не может быть пустым");
             if (film.getDescription() != null && film.getDescription().trim().length() > 200)
                 throw new ValidationException("Максимальная длина описания — 200 символов");
