@@ -1,131 +1,81 @@
 package ru.yandex.practicum.filmorate;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.exception.film.FilmValidationException;
+import ru.yandex.practicum.filmorate.controller.FilmController;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static ru.yandex.practicum.filmorate.validator.FilmValidator.isFilmValid;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 public class FilmValidateTests {
 
-    @Test
-    public void create_shouldCreateFilmIfFieldsIsValid() {
-        Film film = Film.builder()
-                .name("Test Film")
-                .description("Test Description")
-                .releaseDate(LocalDate.parse("2010-01-01"))
-                .duration(115)
-                .build();
 
-        assertTrue(isFilmValid(film));
+    @Test
+    void filmNameIsNullTest() {
+        Film film = new Film();
+        assertThrows(ValidationException.class, () -> FilmController.validateFilm(film));
     }
 
     @Test
-    void create_shouldNotCreateFilmWithNullOrEmptyName() {
-        Film film = Film.builder()
-                .name("Test Film")
-                .description("Test Description")
-                .releaseDate(LocalDate.parse("2010-01-01"))
-                .duration(115)
-                .build();
-
-        String[] names = {null, "", " ", "  "};
-
-        Arrays.stream(names).forEach(name -> {
-            Film filmWithIncorrectName = film
-                    .toBuilder()
-                    .name(name)
-                    .build();
-
-            FilmValidationException exception = Assertions.assertThrows(
-                    FilmValidationException.class, () -> isFilmValid(filmWithIncorrectName));
-
-            assertEquals(String.format("Name can't be blank or null. %s.", filmWithIncorrectName), exception.getMessage());
-        });
+    void filmNameIsEmptyTest() {
+        Film film = new Film();
+        film.setName("");
+        assertThrows(ValidationException.class, () -> FilmController.validateFilm(film));
     }
 
     @Test
-    void create_shouldNotCreateFilmWithDescriptionLongerThen200Symbols() {
-        Film film = Film.builder()
-                .name("Test Film")
-                .description("Test Description")
-                .releaseDate(LocalDate.parse("2010-01-01"))
-                .duration(115)
-                .build();
-
-        Film filmWithIncorrectDescription = film
-                .toBuilder()
-                .description("Слишком длинное описание!".repeat(20))
-                .build();
-
-        FilmValidationException exception = Assertions.assertThrows(
-                FilmValidationException.class, () -> isFilmValid(filmWithIncorrectDescription));
-
-        assertEquals(String.format("Description can not be blank and it's length must be below 200. %s.", filmWithIncorrectDescription), exception.getMessage());
+    void filmNameIsSpaceTest() {
+        Film film = new Film();
+        film.setName("                  ");
+        assertThrows(ValidationException.class, () -> FilmController.validateFilm(film));
     }
 
     @Test
-    void create_shouldCreateFilmWithReleaseDateFirstFilmDate() {
-        Film film = Film.builder()
-                .name("Test Film")
-                .description("Test Description")
-                .releaseDate(LocalDate.parse("2010-01-01"))
-                .duration(115)
-                .build();
-
-        Film filmWithFirstFilmReleaseDate = film
-                .toBuilder()
-                .releaseDate(LocalDate.parse("1895-12-28"))
-                .build();
-
-        assertTrue(isFilmValid(filmWithFirstFilmReleaseDate));
+    void filmDescLengthLimitTest() {
+        Film film = new Film();
+        film.setName("film");
+        film.setName("*".repeat(201));
+        assertThrows(ValidationException.class, () -> FilmController.validateFilm(film));
     }
 
     @Test
-    void create_shouldNotCreateFilmWithReleaseDateBeforeFirstFilmDate() {
-        Film film = Film.builder()
-                .name("Test Film")
-                .description("Test Description")
-                .releaseDate(LocalDate.parse("2010-01-01"))
-                .duration(115)
-                .build();
-
-        Film filmWithIncorrectReleaseDate = film
-                .toBuilder()
-                .releaseDate(LocalDate.parse("1801-01-01"))
-                .build();
-
-        FilmValidationException exception = Assertions.assertThrows(
-                FilmValidationException.class, () -> isFilmValid(filmWithIncorrectReleaseDate));
-
-        assertEquals(String.format("Film release date can't be before 1895-12-28. %s.", filmWithIncorrectReleaseDate), exception.getMessage());
+    void filmReleaseDateNullTest() {
+        Film film = new Film();
+        film.setName("film");
+        film.setName("*".repeat(20));
+        assertThrows(ValidationException.class, () -> FilmController.validateFilm(film));
     }
 
     @Test
-    void create_shouldNotCreateFilmWithNegativeDuration() {
-        Film film = Film.builder()
-                .name("Test Film")
-                .description("Test Description")
-                .releaseDate(LocalDate.parse("2010-01-01"))
-                .duration(115)
-                .build();
+    void filmReleaseDateTest() {
+        Film film = new Film();
+        film.setName("film");
+        film.setName("*".repeat(20));
+        film.setReleaseDate(LocalDate.of(1895, 12, 27));
+        assertThrows(ValidationException.class, () -> FilmController.validateFilm(film));
+    }
 
-        Film filmWithNegativeDuration = film
-                .toBuilder()
-                .duration(-1)
-                .build();
+    @Test
+    void filmDurationTest() {
+        Film film = new Film();
+        film.setName("film");
+        film.setName("*".repeat(20));
+        film.setReleaseDate(LocalDate.of(1895, 12, 27));
+        film.setDuration(-1);
+        assertThrows(ValidationException.class, () -> FilmController.validateFilm(film));
+    }
 
-        FilmValidationException exception = Assertions.assertThrows(
-                FilmValidationException.class, () -> isFilmValid(filmWithNegativeDuration));
-
-        assertEquals(String.format("Duration should be positive. %s.", filmWithNegativeDuration), exception.getMessage());
+    @Test
+    void filmDurationZeroTest() {
+        Film film = new Film();
+        film.setName("film");
+        film.setName("*".repeat(20));
+        film.setReleaseDate(LocalDate.of(1895, 12, 27));
+        film.setDuration(0);
+        assertThrows(ValidationException.class, () -> FilmController.validateFilm(film));
     }
 }

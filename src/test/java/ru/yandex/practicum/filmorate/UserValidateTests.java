@@ -1,102 +1,116 @@
 package ru.yandex.practicum.filmorate;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.exception.user.UserValidationException;
+import ru.yandex.practicum.filmorate.controller.UserController;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 
-import static ru.yandex.practicum.filmorate.validator.UserValidator.isUserValid;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 public class UserValidateTests {
 
     @Test
-    void create_shouldCreateUserIfFieldsIsValid() {
-        User user = User
-                .builder()
-                .login("TestLogin")
-                .name("TestName")
-                .email("email@email.com")
-                .birthday(LocalDate.parse("1996-03-04"))
-                .build();
-
-        assertTrue(isUserValid(user));
+    void userEmailNullTest() {
+        User user = new User();
+        assertThrows(ValidationException.class, () -> UserController.validateUser(user));
     }
 
     @Test
-    void create_shouldNotCreateUserWithWrongLogin() {
-        User user = User
-                .builder()
-                .login("TestLogin")
-                .name("TestName")
-                .email("email@email.com")
-                .birthday(LocalDate.parse("1996-03-04"))
-                .build();
-
-        String[] logins = {null, "wrong name", "", " "};
-
-        Arrays.stream(logins).forEach(login -> {
-            User userWithIncorrectLogin = user
-                    .toBuilder()
-                    .login(login)
-                    .build();
-
-            UserValidationException exception = Assertions.assertThrows(
-                    UserValidationException.class, () -> isUserValid(userWithIncorrectLogin));
-
-            assertEquals(String.format("Login validation error.", userWithIncorrectLogin), exception.getMessage());
-        });
+    void userEmailEmptyTest() {
+        User user = new User();
+        user.setEmail("");
+        assertThrows(ValidationException.class, () -> UserController.validateUser(user));
     }
 
     @Test
-    void create_shouldNotCreateUserWithWrongEmail() {
-        User user = User
-                .builder()
-                .login("TestLogin")
-                .name("TestName")
-                .email("email@email.com")
-                .birthday(LocalDate.parse("1996-03-04"))
-                .build();
-
-        String[] emails = {null, "", " ", "test.@email.ru", ".test.@email.ru", "testemail.ru"};
-
-        Arrays.stream(emails).forEach(email -> {
-            User userWithIncorrectEmail = user
-                    .toBuilder()
-                    .email(email)
-                    .build();
-
-            UserValidationException exception = Assertions.assertThrows(
-                    UserValidationException.class, () -> isUserValid(userWithIncorrectEmail));
-
-            assertEquals(String.format("Email validation error.", userWithIncorrectEmail), exception.getMessage());
-        });
+    void userEmailSpaceTest() {
+        User user = new User();
+        user.setEmail("     ");
+        assertThrows(ValidationException.class, () -> UserController.validateUser(user));
     }
 
     @Test
-    void create_shouldNotCreateUserWithBirthdayInFuture() {
-        User user = User
-                .builder()
-                .login("TestLogin")
-                .name("TestName")
-                .email("email@email.com")
-                .birthday(LocalDate.parse("1996-03-04"))
-                .build();
-
-        User userWithBirthdayInFuture = user
-                .toBuilder()
-                .birthday(LocalDate.parse("3000-01-01"))
-                .build();
-
-        UserValidationException exception = Assertions.assertThrows(
-                UserValidationException.class, () -> isUserValid(userWithBirthdayInFuture));
-
-        assertEquals(String.format("Birthday day can't be in future.", userWithBirthdayInFuture), exception.getMessage());
+    void userEmailFormatErrorTest() {
+        User user = new User();
+        user.setEmail("adafasfasf");
+        assertThrows(ValidationException.class, () -> UserController.validateUser(user));
     }
+
+    @Test
+    void userLoginNullTest() {
+        User user = new User();
+        user.setEmail("email@mail.ru");
+        assertThrows(ValidationException.class, () -> UserController.validateUser(user));
+    }
+
+    @Test
+    void userLoginEmptyTest() {
+        User user = new User();
+        user.setEmail("email@mail.ru");
+        user.setLogin("");
+        assertThrows(ValidationException.class, () -> UserController.validateUser(user));
+    }
+
+    @Test
+    void userLoginSpaceTest() {
+        User user = new User();
+        user.setEmail("email@mail.ru");
+        user.setLogin(" ");
+        assertThrows(ValidationException.class, () -> UserController.validateUser(user));
+    }
+
+    @Test
+    void userLoginHasSpaceTest() {
+        User user = new User();
+        user.setEmail("email@mail.ru");
+        user.setLogin("sd ");
+        assertThrows(ValidationException.class, () -> UserController.validateUser(user));
+    }
+
+    @Test
+    void userBridgeDayTest() {
+        User user = new User();
+        user.setEmail("email@mail.ru");
+        user.setLogin("sd ");
+        user.setBirthday(LocalDate.now().plusDays(1));
+        assertThrows(ValidationException.class, () -> UserController.validateUser(user));
+    }
+
+    @Test
+    void userNameNullTest() {
+        User user = new User();
+        user.setEmail("email@mail.ru");
+        user.setLogin("login");
+        user.setBirthday(LocalDate.now().minusDays(1));
+        UserController.validateUser(user);
+        assertEquals(user.getName(), user.getLogin());
+    }
+
+    @Test
+    void userNameEmptyTest() {
+        User user = new User();
+        user.setEmail("email@mail.ru");
+        user.setLogin("login");
+        user.setName("");
+        user.setBirthday(LocalDate.now().minusDays(1));
+        UserController.validateUser(user);
+        assertEquals(user.getName(), user.getLogin());
+    }
+
+    @Test
+    void userNameSpaceTest() {
+        User user = new User();
+        user.setEmail("email@mail.ru");
+        user.setLogin("login");
+        user.setName("");
+        user.setBirthday(LocalDate.now().minusDays(1));
+        UserController.validateUser(user);
+        assertEquals(user.getName(), user.getLogin());
+    }
+
 }
