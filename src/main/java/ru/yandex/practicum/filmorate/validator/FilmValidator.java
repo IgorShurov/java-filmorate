@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.validator;
 
+import org.apache.commons.lang3.StringUtils;
 import ru.yandex.practicum.filmorate.exception.film.FilmValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -10,7 +11,7 @@ public class FilmValidator {
     public static boolean isFilmValid(Film film) {
         if (film.getId() != null && film.getId() <= 0) {
             throw new FilmValidationException(String.format("Id should be positive or null. %s.", film));
-        } else if (film.getName() == null || film.getName().isBlank()) {
+        } else if (StringUtils.isBlank(film.getName())) {
             throw new FilmValidationException(String.format("Name can't be blank or null. %s.", film));
         } else if (film.getDescription().isBlank() || film.getDescription().length() >= 200) {
             throw new FilmValidationException(String.format("Description can not be blank and it's length must be below 200. %s.", film));
@@ -23,3 +24,4 @@ public class FilmValidator {
         }
     }
 }
+
