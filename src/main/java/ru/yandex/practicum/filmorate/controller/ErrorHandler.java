@@ -5,39 +5,42 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.yandex.practicum.filmorate.exception.film.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exception.film.FilmValidationException;
-import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
-import ru.yandex.practicum.filmorate.exception.user.UserValidationException;
+import ru.yandex.practicum.filmorate.exception.film.*;
+import ru.yandex.practicum.filmorate.exception.genre.*;
+import ru.yandex.practicum.filmorate.exception.mpa.*;
+import ru.yandex.practicum.filmorate.exception.user.*;
+import ru.yandex.practicum.filmorate.exception.rating.*;
 
-import javax.validation.ValidationException;
 
-@RestControllerAdvice("ru.yandex.practicum.filmorate.controller")
+
+@RestControllerAdvice
 @Slf4j
 public class ErrorHandler {
 
-    @ExceptionHandler({NullPointerException.class, FilmNotFoundException.class, UserNotFoundException.class})
+    @ExceptionHandler({NullPointerException.class, FilmNotFoundException.class, UserNotFoundException.class,
+            GenreNotFoundException.class, MpaNotFoundException.class, RatingNotFoundException.class, IndexOutOfBoundsException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFound(final RuntimeException exception) {
-        log.error("Object not found : " + exception.getMessage());
+        log.error(String.format("ERROR! %s: %s", exception.getClass().getSimpleName(), exception.getMessage()));
         return new ErrorResponse(exception.getMessage());
     }
 
-    @ExceptionHandler({ValidationException.class, FilmValidationException.class, UserValidationException.class})
+    @ExceptionHandler({FilmValidationException.class, UserValidationException.class, GenreValidationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleBadRequest(final ValidationException exception) {
-        log.error("Validation Error : " + exception.getMessage());
+    public ErrorResponse handleBadRequest(final javax.validation.ValidationException exception) {
+        log.error(String.format("ERROR! %s: %s", exception.getClass().getSimpleName(), exception.getMessage()));
         return new ErrorResponse(exception.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleThrowable(final Throwable exception) {
-        return new ErrorResponse("Something went wrong!" + exception);
+        log.error(String.format("ERROR! %s: %s", exception.getClass().getSimpleName(), exception));
+        return new ErrorResponse("ERROR! Something went wrong!" + exception);
     }
 
     private static class ErrorResponse {
-        private String error;
+        String error;
 
         public ErrorResponse(String error) {
             this.error = error;

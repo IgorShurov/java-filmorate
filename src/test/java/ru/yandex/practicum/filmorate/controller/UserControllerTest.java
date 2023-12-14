@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate;
+package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,7 @@ import static ru.yandex.practicum.filmorate.validator.UserValidator.isUserValid;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-public class UserValidateTests {
+public class UserControllerTest {
 
     @Test
     void create_shouldCreateUserIfFieldsIsValid() {

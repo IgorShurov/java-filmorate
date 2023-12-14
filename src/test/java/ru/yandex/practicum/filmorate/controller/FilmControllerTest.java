@@ -1,10 +1,11 @@
-package ru.yandex.practicum.filmorate;
+package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.exception.film.FilmValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -14,7 +15,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static ru.yandex.practicum.filmorate.validator.FilmValidator.isFilmValid;
 
 @SpringBootTest
-public class FilmValidateTests {
+public class FilmControllerTest {
+
 
     @Test
     public void create_shouldCreateFilmIfFieldsIsValid() {
@@ -23,6 +25,10 @@ public class FilmValidateTests {
                 .description("Test Description")
                 .releaseDate(LocalDate.parse("2010-01-01"))
                 .duration(115)
+                .mpa(Mpa.builder().id((long) 1)
+                        .name("G")
+                        .description("У фильма нет возрастных ограничений")
+                        .build())
                 .build();
 
         assertTrue(isFilmValid(film));
@@ -35,6 +41,10 @@ public class FilmValidateTests {
                 .description("Test Description")
                 .releaseDate(LocalDate.parse("2010-01-01"))
                 .duration(115)
+                .mpa(Mpa.builder().id((long) 1)
+                        .name("G")
+                        .description("У фильма нет возрастных ограничений")
+                        .build())
                 .build();
 
         String[] names = {null, "", " ", "  "};
@@ -59,6 +69,10 @@ public class FilmValidateTests {
                 .description("Test Description")
                 .releaseDate(LocalDate.parse("2010-01-01"))
                 .duration(115)
+                .mpa(Mpa.builder().id((long) 1)
+                        .name("G")
+                        .description("У фильма нет возрастных ограничений")
+                        .build())
                 .build();
 
         Film filmWithIncorrectDescription = film
@@ -79,6 +93,10 @@ public class FilmValidateTests {
                 .description("Test Description")
                 .releaseDate(LocalDate.parse("2010-01-01"))
                 .duration(115)
+                .mpa(Mpa.builder().id((long) 1)
+                        .name("G")
+                        .description("У фильма нет возрастных ограничений")
+                        .build())
                 .build();
 
         Film filmWithFirstFilmReleaseDate = film
@@ -96,6 +114,10 @@ public class FilmValidateTests {
                 .description("Test Description")
                 .releaseDate(LocalDate.parse("2010-01-01"))
                 .duration(115)
+                .mpa(Mpa.builder().id((long) 1)
+                        .name("G")
+                        .description("У фильма нет возрастных ограничений")
+                        .build())
                 .build();
 
         Film filmWithIncorrectReleaseDate = film
@@ -116,6 +138,10 @@ public class FilmValidateTests {
                 .description("Test Description")
                 .releaseDate(LocalDate.parse("2010-01-01"))
                 .duration(115)
+                .mpa(Mpa.builder().id((long) 1)
+                        .name("G")
+                        .description("У фильма нет возрастных ограничений")
+                        .build())
                 .build();
 
         Film filmWithNegativeDuration = film
