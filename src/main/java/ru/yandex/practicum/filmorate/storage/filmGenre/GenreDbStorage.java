@@ -24,10 +24,7 @@ public class GenreDbStorage implements GenreStorage {
 
     @Override
     public Genre getGenreById(long id) {
-        String sql = "SELECT g.id ," +
-                "g.name " +
-                "FROM genre g " +
-                "WHERE g.id = ?;";
+        String sql = "SELECT g.id ," + "g.name " + "FROM genre g " + "WHERE g.id = ?;";
         return jdbcTemplate.queryForObject(sql, this::mapRowToGenre, id);
     }
 
@@ -40,19 +37,13 @@ public class GenreDbStorage implements GenreStorage {
     public List<Film> setGenres(List<Film> films) {
         List<Long> filmIds = new ArrayList<>();
         films.forEach(film -> filmIds.add(film.getId()));
-        String sql = "SELECT fg.film_id, g.id, g.name " +
-                "FROM genre g " +
-                "JOIN film_genre fg ON fg.genre_id = g.id " +
-                "WHERE fg.film_id IN (" + StringUtils.join(filmIds, ',') + ")" +
-                "ORDER BY g.id asc;";
+        String sql = "SELECT fg.film_id, g.id, g.name " + "FROM genre g " + "JOIN film_genre fg ON fg.genre_id = g.id " + "WHERE fg.film_id IN (" + StringUtils.join(filmIds, ',') + ")" + "ORDER BY g.id asc;";
 
         SqlRowSet genreRows = jdbcTemplate.queryForRowSet(sql);
         while (genreRows.next()) {
             for (Film film : films) {
                 if (film.getId() == genreRows.getInt("film_id")) {
-                    film.getGenres().add(Genre.builder()
-                            .id(genreRows.getLong("id"))
-                            .name(genreRows.getString("name")).build());
+                    film.getGenres().add(Genre.builder().id(genreRows.getLong("id")).name(genreRows.getString("name")).build());
                 }
             }
         }
@@ -61,9 +52,7 @@ public class GenreDbStorage implements GenreStorage {
 
     @Override
     public List<Genre> getAllGenre() {
-        String sqlQuery = "SELECT * " +
-                "FROM genre " +
-                "GROUP BY id ORDER BY id ASC;";
+        String sqlQuery = "SELECT * " + "FROM genre " + "GROUP BY id ORDER BY id ASC;";
         return jdbcTemplate.query(sqlQuery, this::mapRowToGenre);
     }
 
@@ -79,16 +68,12 @@ public class GenreDbStorage implements GenreStorage {
 
     @Override
     public void deleteFilmGenre(Film film) {
-        String sql = "DELETE FROM film_genre " +
-                "WHERE film_id = ?;";
+        String sql = "DELETE FROM film_genre " + "WHERE film_id = ?;";
         jdbcTemplate.update(sql, film.getId());
     }
 
     private Genre mapRowToGenre(ResultSet resultSet, int rowNum) throws SQLException {
-        Genre genre = Genre.builder()
-                .id(resultSet.getLong("id"))
-                .name(resultSet.getString("name"))
-                .build();
+        Genre genre = Genre.builder().id(resultSet.getLong("id")).name(resultSet.getString("name")).build();
         isGenreValid(genre);
         return genre;
     }

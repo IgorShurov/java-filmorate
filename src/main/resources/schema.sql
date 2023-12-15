@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS users
     email    varchar(200) NOT NULL UNIQUE,
     login    varchar(200) NOT NULL UNIQUE,
     name     varchar(200) NOT NULL,
-    birthday date    NOT NULL
+    birthday date         NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS film_likes
