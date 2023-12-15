@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+
 import static ru.yandex.practicum.filmorate.validator.GenreValidator.isGenreValid;
 
 import java.sql.ResultSet;

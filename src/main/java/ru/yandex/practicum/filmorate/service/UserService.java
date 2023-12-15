@@ -14,6 +14,7 @@ import java.util.Set;
 
 import static ru.yandex.practicum.filmorate.validator.UserValidator.isUserValid;
 
+
 @Slf4j
 @Service
 @RequiredArgsConstructor

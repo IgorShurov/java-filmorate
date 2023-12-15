@@ -21,6 +21,9 @@ public class UserValidator {
         } else if (user.getBirthday().isAfter(LocalDate.now())) {
             throw new UserValidationException("Birthday day can't be in future.");
         } else {
+            if (user.getName().isBlank()) {
+                user.setName(user.getLogin());
+            }
             return true;
         }
     }

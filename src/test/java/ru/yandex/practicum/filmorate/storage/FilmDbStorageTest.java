@@ -113,7 +113,7 @@ public class FilmDbStorageTest {
         filmDbStorage.createFilm(film);
         userDbStorage.createUser(user);
         filmDbStorage.addLike(1, 1);
-        filmDbStorage.deleteLike(1,1);
+        filmDbStorage.deleteLike(1, 1);
         Assertions.assertTrue(filmDbStorage.getLikesByFilmId(1).isEmpty());
     }
 }

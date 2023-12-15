@@ -11,8 +11,6 @@ import ru.yandex.practicum.filmorate.exception.mpa.*;
 import ru.yandex.practicum.filmorate.exception.user.*;
 import ru.yandex.practicum.filmorate.exception.rating.*;
 
-
-
 @RestControllerAdvice
 @Slf4j
 public class ErrorHandler {
