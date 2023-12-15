@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.exception.film.FilmValidationException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
@@ -55,8 +55,8 @@ public class FilmControllerTest {
                     .name(name)
                     .build();
 
-            FilmValidationException exception = Assertions.assertThrows(
-                    FilmValidationException.class, () -> isFilmValid(filmWithIncorrectName));
+            ValidationException exception = Assertions.assertThrows(
+                    ValidationException.class, () -> isFilmValid(filmWithIncorrectName));
 
             assertEquals(String.format("Name can't be blank or null. %s.", filmWithIncorrectName), exception.getMessage());
         });
@@ -80,8 +80,8 @@ public class FilmControllerTest {
                 .description("Слишком длинное описание!".repeat(20))
                 .build();
 
-        FilmValidationException exception = Assertions.assertThrows(
-                FilmValidationException.class, () -> isFilmValid(filmWithIncorrectDescription));
+        ValidationException exception = Assertions.assertThrows(
+                ValidationException.class, () -> isFilmValid(filmWithIncorrectDescription));
 
         assertEquals(String.format("Description can not be blank and it's length must be below 200. %s.", filmWithIncorrectDescription), exception.getMessage());
     }
@@ -125,8 +125,8 @@ public class FilmControllerTest {
                 .releaseDate(LocalDate.parse("1801-01-01"))
                 .build();
 
-        FilmValidationException exception = Assertions.assertThrows(
-                FilmValidationException.class, () -> isFilmValid(filmWithIncorrectReleaseDate));
+        ValidationException exception = Assertions.assertThrows(
+                ValidationException.class, () -> isFilmValid(filmWithIncorrectReleaseDate));
 
         assertEquals(String.format("Film release date can't be before 1895-12-28. %s.", filmWithIncorrectReleaseDate), exception.getMessage());
     }
@@ -149,8 +149,8 @@ public class FilmControllerTest {
                 .duration(-1)
                 .build();
 
-        FilmValidationException exception = Assertions.assertThrows(
-                FilmValidationException.class, () -> isFilmValid(filmWithNegativeDuration));
+        ValidationException exception = Assertions.assertThrows(
+                ValidationException.class, () -> isFilmValid(filmWithNegativeDuration));
 
         assertEquals(String.format("Duration should be positive. %s.", filmWithNegativeDuration), exception.getMessage());
     }

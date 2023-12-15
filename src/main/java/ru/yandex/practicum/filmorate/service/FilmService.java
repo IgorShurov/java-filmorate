@@ -3,8 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.film.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exception.rating.RatingNotFoundException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.filmGenre.GenreStorage;
@@ -51,9 +50,8 @@ public class FilmService {
                     .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
                     .limit(count)
                     .collect(Collectors.toList());
-        } else {
-            return null;
         }
+        return null;
     }
 
     public Film addLike(long filmId, long userId) {
@@ -75,13 +73,13 @@ public class FilmService {
 
     private void isFilmExists(long id) {
         if (!filmStorage.checkFilmExistInBd(id)) {
-            throw new FilmNotFoundException(id);
+            throw new NotFoundException(Film.class.getSimpleName(), id);
         }
     }
 
     private void isLikeFromUserExist(long id) {
         if (!filmStorage.checkFilmExistInBd(id)) {
-            throw new RatingNotFoundException(id);
+            throw new NotFoundException(Film.class.getSimpleName(), id);
         }
     }
 }

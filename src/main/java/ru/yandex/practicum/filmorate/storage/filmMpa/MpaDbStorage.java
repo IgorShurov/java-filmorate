@@ -13,14 +13,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MpaDbStorage implements MpaStorage {
     private final JdbcTemplate jdbcTemplate;
-
+@Override
     public Mpa getMpaById(long id) {
         String sql = "SELECT * " +
                 "FROM mpa " +
                 "WHERE id = ?;";
         return jdbcTemplate.queryForObject(sql, this::mapMpa, id);
     }
-
+@Override
     public List<Mpa> getAllMpa() {
         String sqlQuery = "SELECT * " +
                 "FROM mpa;";

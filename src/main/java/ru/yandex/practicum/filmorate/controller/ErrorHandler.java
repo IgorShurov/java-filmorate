@@ -5,25 +5,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.yandex.practicum.filmorate.exception.film.*;
-import ru.yandex.practicum.filmorate.exception.genre.*;
-import ru.yandex.practicum.filmorate.exception.mpa.*;
-import ru.yandex.practicum.filmorate.exception.user.*;
-import ru.yandex.practicum.filmorate.exception.rating.*;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 
 @RestControllerAdvice
 @Slf4j
 public class ErrorHandler {
 
-    @ExceptionHandler({NullPointerException.class, FilmNotFoundException.class, UserNotFoundException.class,
-            GenreNotFoundException.class, MpaNotFoundException.class, RatingNotFoundException.class, IndexOutOfBoundsException.class})
+    @ExceptionHandler({NullPointerException.class, NotFoundException.class, IndexOutOfBoundsException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFound(final RuntimeException exception) {
         log.error(String.format("ERROR! %s: %s", exception.getClass().getSimpleName(), exception.getMessage()));
         return new ErrorResponse(exception.getMessage());
     }
 
-    @ExceptionHandler({FilmValidationException.class, UserValidationException.class, GenreValidationException.class})
+    @ExceptionHandler({ValidationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleBadRequest(final javax.validation.ValidationException exception) {
         log.error(String.format("ERROR! %s: %s", exception.getClass().getSimpleName(), exception.getMessage()));

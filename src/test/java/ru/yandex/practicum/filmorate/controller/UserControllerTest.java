@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.exception.user.UserValidationException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
@@ -47,8 +47,8 @@ public class UserControllerTest {
                     .login(login)
                     .build();
 
-            UserValidationException exception = Assertions.assertThrows(
-                    UserValidationException.class, () -> isUserValid(userWithIncorrectLogin));
+            ValidationException exception = Assertions.assertThrows(
+                    ValidationException.class, () -> isUserValid(userWithIncorrectLogin));
 
             assertEquals(String.format("Login validation error.", userWithIncorrectLogin), exception.getMessage());
         });
@@ -72,8 +72,8 @@ public class UserControllerTest {
                     .email(email)
                     .build();
 
-            UserValidationException exception = Assertions.assertThrows(
-                    UserValidationException.class, () -> isUserValid(userWithIncorrectEmail));
+            ValidationException exception = Assertions.assertThrows(
+                    ValidationException.class, () -> isUserValid(userWithIncorrectEmail));
 
             assertEquals(String.format("Email validation error.", userWithIncorrectEmail), exception.getMessage());
         });
@@ -94,8 +94,8 @@ public class UserControllerTest {
                 .birthday(LocalDate.parse("3000-01-01"))
                 .build();
 
-        UserValidationException exception = Assertions.assertThrows(
-                UserValidationException.class, () -> isUserValid(userWithBirthdayInFuture));
+        ValidationException exception = Assertions.assertThrows(
+                ValidationException.class, () -> isUserValid(userWithBirthdayInFuture));
 
         assertEquals(String.format("Birthday day can't be in future.", userWithBirthdayInFuture), exception.getMessage());
     }

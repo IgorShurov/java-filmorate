@@ -9,12 +9,12 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 
-import static ru.yandex.practicum.filmorate.validator.GenreValidator.isGenreValid;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static ru.yandex.practicum.filmorate.validator.GenreValidator.isGenreValid;
 
 @Slf4j
 @Component("genreDbStorage")
