@@ -1,107 +1,86 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import static ru.yandex.practicum.filmorate.validator.UserValidator.isUserNameValid;
+import static ru.yandex.practicum.filmorate.validator.UserValidator.isUserValid;
 
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
-
-    private final UserStorage userStorage;
+    private final UserStorage storage;
 
     public User createUser(User user) {
-        setUserName(user);
+        isUserValid(user);
 
-        return userStorage.create(user);
+        return storage.createUser(user);
     }
 
     public User updateUser(User user) {
-        checkUserIsNotNull(user.getId());
+        isUserValid(user);
+        isUserExist(user.getId());
 
-        setUserName(user);
-
-        return userStorage.update(user);
+        return storage.updateUser(user);
     }
 
-    public Map<Integer, User> getUsers() {
-        return userStorage.getAll();
+    public List<User> getUsers() {
+        return storage.getUsers();
     }
 
-    public User getUserById(Integer id) {
-        checkUserIsNotNull(id);
+    public User getUserById(long id) {
+        isUserExist(id);
 
-        return userStorage.getById(id);
+        return storage.getUserById(id);
     }
 
-    public List<User> getUserFriends(Integer id) {
-        checkUserIsNotNull(id);
+    public List<User> getUserFriends(long id) {
+        isUserExist(id);
 
-        return userStorage.getById(id)
-                .getFriends()
-                .stream()
-                .map(getUsers()::get)
-                .collect(Collectors.toList());
+        return storage.getFriendsList(id);
     }
 
-    public List<User> getCommonFriends(Integer id, Integer friendId) {
-        checkUserIsNotNull(id);
-        checkUserIsNotNull(friendId);
+    public List<User> getCommonFriends(long firstUserId, long secondUserId) {
+        isUserExist(firstUserId);
+        isUserExist(secondUserId);
 
-        User userOne = userStorage.getById(id);
-        User userTwo = userStorage.getById(friendId);
+        Set<User> friendsFirstUser = new HashSet<>(storage.getFriendsList(firstUserId));
+        friendsFirstUser.retainAll(storage.getFriendsList(secondUserId));
+        List<User> mutualFriends = new ArrayList<>(friendsFirstUser);
 
-        Map<Integer, User> users = getUsers();
-        Set<Integer> user1Friends = userOne.getFriends();
-        Set<Integer> user2Friends = userTwo.getFriends();
-
-        return user1Friends
-                .stream()
-                .filter(user2Friends::contains)
-                .map(users::get)
-                .collect(Collectors.toList());
+        return mutualFriends;
     }
 
-    public void addFriend(Integer id, Integer friendId) {
-        checkUserIsNotNull(id);
-        checkUserIsNotNull(friendId);
+    public User addFriend(long userId, long friendId) {
+        isUserExist(userId);
+        isUserExist(friendId);
 
-        User user = userStorage.getById(id);
-        User friend = userStorage.getById(friendId);
-
-        user.getFriends().add(friend.getId());
-        friend.getFriends().add(user.getId());
+        storage.addFriend(userId, friendId);
+        return storage.getUserById(userId);
     }
 
-    public void deleteFriend(Integer id, Integer friendId) {
-        checkUserIsNotNull(id);
-        checkUserIsNotNull(friendId);
+    public User deleteFriend(long userId, long friendId) {
+        isUserExist(userId);
+        isUserExist(friendId);
 
-        User user = userStorage.getById(id);
-        User friend = userStorage.getById(friendId);
-
-        user.getFriends().remove(friend.getId());
-        friend.getFriends().remove(user.getId());
+        storage.deleteFriend(userId, friendId);
+        return storage.getUserById(userId);
     }
 
-    private void checkUserIsNotNull(Integer id) {
-        if (userStorage.getById(id) == null) {
-            throw new UserNotFoundException(String.format("User with id %s. not found", id));
-        }
-    }
-
-    private void setUserName(User user) {
-        if (!isUserNameValid(user.getName())) {
-            user.setName(user.getLogin());
+    private void isUserExist(long id) {
+        if (!storage.isUserExistInBd(id)) {
+            throw new NotFoundException(Film.class.getSimpleName(), id);
         }
     }
 }

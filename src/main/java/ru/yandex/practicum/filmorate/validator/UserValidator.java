@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.validator;
 
-import ru.yandex.practicum.filmorate.exception.user.UserValidationException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
@@ -13,14 +13,17 @@ public class UserValidator {
 
     public static boolean isUserValid(User user) {
         if (user.getId() != null && user.getId() <= 0) {
-            throw new UserValidationException("Id should be positive or null.");
+            throw new ValidationException("Id should be positive or null.");
         } else if (!isPatternMatches(user.getEmail(), EMAIL_REGEX_PATTERN)) {
-            throw new UserValidationException("Email validation error.");
+            throw new ValidationException("Email validation error.");
         } else if (!isPatternMatches(user.getLogin(), LOGIN_REGEX_PATTERN)) {
-            throw new UserValidationException("Login validation error.");
+            throw new ValidationException("Login validation error.");
         } else if (user.getBirthday().isAfter(LocalDate.now())) {
-            throw new UserValidationException("Birthday day can't be in future.");
+            throw new ValidationException("Birthday day can't be in future.");
         } else {
+            if (user.getName().isBlank()) {
+                user.setName(user.getLogin());
+            }
             return true;
         }
     }
